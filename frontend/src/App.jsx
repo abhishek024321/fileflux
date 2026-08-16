@@ -31,8 +31,8 @@ const GROUPS = [
       { key: "pdf_html", from: "PDF", to: "HTML", accept: ".pdf" },
     ],
   },
-  
-   {
+
+  {
     label: "Images ⇄ PDF",
     pairs: [
       { key: "jpg_pdf", from: "JPG", to: "PDF", accept: ".jpg,.jpeg" },
@@ -175,25 +175,46 @@ export default function App() {
         }}
       />
 
-      <div className="relative max-w-5xl mx-auto px-6 py-14">
+      <div className="relative max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-14">
         {/* Header */}
-        <header className="mb-12 flex items-start justify-between gap-6 flex-wrap">
-          <div>
-            <div className="flex items-center gap-2 text-[#e8a33d] font-mono text-xs tracking-[0.25em] uppercase mb-3">
-              <FileStack size={14} strokeWidth={2.5} />
-              File Flux
-            </div>
-            <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight leading-[1.05]">
-              Convert your files,
-              <br />
-              <span className="text-[#8b8f9e]">without leaving a trace of hassle.</span>
-            </h1>
+        <header className="mb-8 sm:mb-12">
+          <div className="flex items-center gap-2 text-[#e8a33d] font-mono text-xs tracking-[0.25em] uppercase mb-3">
+            <FileStack size={14} strokeWidth={2.5} />
+            File Flux
           </div>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight leading-[1.1] sm:leading-[1.05]">
+            Convert your files,
+            <br className="hidden sm:block" />{" "}
+            <span className="text-[#8b8f9e]">
+              without leaving a trace of hassle.
+            </span>
+          </h1>
         </header>
 
-        <div className="grid lg:grid-cols-[280px_1fr] gap-8">
-          {/* Conversion picker */}
-          <nav className="space-y-6">
+        <div className="grid lg:grid-cols-[280px_1fr] gap-6 lg:gap-8">
+          {/* Conversion picker — dropdown on mobile, full list on desktop */}
+          <div className="lg:hidden">
+            <label className="block font-mono text-[11px] uppercase tracking-[0.18em] text-[#5c6070] mb-2">
+              Choose a conversion
+            </label>
+            <select
+              value={selectedKey}
+              onChange={(e) => handleSelectPair(e.target.value)}
+              className="w-full rounded-lg bg-[#1b1e29] border border-[#2a2e3d] text-[#ededf0] font-mono text-sm px-3 py-3 focus:outline-none focus:border-[#e8a33d] appearance-none"
+            >
+              {GROUPS.map((group) => (
+                <optgroup key={group.label} label={group.label}>
+                  {group.pairs.map((pair) => (
+                    <option key={pair.key} value={pair.key}>
+                      {pair.from} → {pair.to}
+                    </option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
+          </div>
+
+          <nav className="hidden lg:block space-y-6">
             {GROUPS.map((group) => (
               <div key={group.label}>
                 <div className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#5c6070] mb-2">
@@ -227,17 +248,17 @@ export default function App() {
           </nav>
 
           {/* Conversion ticket */}
-          <div className="bg-[#1b1e29] border border-[#2a2e3d] rounded-2xl p-8">
+          <div className="bg-[#1b1e29] border border-[#2a2e3d] rounded-2xl p-5 sm:p-8">
             {/* ticket header, styled like a stamped document tag */}
-            <div className="flex items-center justify-between border-b border-dashed border-[#3a3e50] pb-6 mb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-dashed border-[#3a3e50] pb-5 sm:pb-6 mb-5 sm:mb-6">
               <div className="font-mono text-xs uppercase tracking-[0.2em] text-[#5c6070]">
                 Conversion
               </div>
-              <div className="flex items-center gap-3 font-mono text-sm">
+              <div className="flex items-center gap-2 sm:gap-3 font-mono text-xs sm:text-sm">
                 <span className="px-2.5 py-1 rounded bg-[#12141c] border border-[#2a2e3d]">
                   .{selected.from.toLowerCase()}
                 </span>
-                <ArrowRight size={16} className="text-[#e8a33d]" />
+                <ArrowRight size={16} className="text-[#e8a33d] shrink-0" />
                 <span className="px-2.5 py-1 rounded bg-[#e8a33d]/10 border border-[#e8a33d]/40 text-[#e8a33d]">
                   .{selected.to.toLowerCase()}
                 </span>
@@ -253,10 +274,10 @@ export default function App() {
               onDragLeave={() => setDragActive(false)}
               onDrop={onDrop}
               onClick={() => inputRef.current?.click()}
-              className={`cursor-pointer rounded-xl border-2 border-dashed px-6 py-14 text-center transition-colors ${
+              className={`cursor-pointer rounded-xl border-2 border-dashed px-4 sm:px-6 py-10 sm:py-14 text-center transition-colors ${
                 dragActive
                   ? "border-[#e8a33d] bg-[#e8a33d]/5"
-                  : "border-[#2a2e3d] hover:border-[#3a3e50]"
+                  : "border-[#2a2e3d] hover:border-[#3a3e50] active:border-[#3a3e50]"
               }`}
             >
               <input
@@ -267,32 +288,32 @@ export default function App() {
                 onChange={onFilePicked}
               />
               <UploadCloud
-                size={30}
+                size={28}
                 className="mx-auto mb-3 text-[#5c6070]"
                 strokeWidth={1.5}
               />
               {file ? (
-                <p className="text-sm text-[#ededf0]">
+                <p className="text-sm text-[#ededf0] break-all px-2">
                   <span className="font-mono">{file.name}</span>
-                  <span className="text-[#5c6070]"> · click to replace</span>
+                  <span className="text-[#5c6070]"> · tap to replace</span>
                 </p>
               ) : (
-                <p className="text-sm text-[#8b8f9e]">
+                <p className="text-sm text-[#8b8f9e] px-2">
                   Drop a{" "}
                   <span className="font-mono text-[#c3c6d1]">
                     {selected.accept.replaceAll(",", " / ")}
                   </span>{" "}
-                  file here, or click to browse
+                  file here, or tap to browse
                 </p>
               )}
             </div>
 
             {/* Action row */}
-            <div className="mt-6 flex items-center gap-4">
+            <div className="mt-6 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
               <button
                 onClick={runConversion}
                 disabled={!file || status === "working"}
-                className="flex items-center gap-2 rounded-lg bg-[#e8a33d] text-[#12141c] font-semibold px-5 py-2.5 text-sm disabled:opacity-30 disabled:cursor-not-allowed hover:bg-[#f0af4d] transition-colors"
+                className="flex items-center justify-center gap-2 rounded-lg bg-[#e8a33d] text-[#12141c] font-semibold px-5 py-3 sm:py-2.5 text-sm disabled:opacity-30 disabled:cursor-not-allowed hover:bg-[#f0af4d] active:bg-[#f0af4d] transition-colors w-full sm:w-auto"
               >
                 {status === "working" ? (
                   <>
@@ -304,21 +325,21 @@ export default function App() {
                 )}
               </button>
 
-              {status === "done" && resultUrl && (
-       <a         
-                  href={resultUrl}
-                  download={`converted.${selected.to.toLowerCase()}`}
-                  className="flex items-center gap-2 text-sm text-[#6bc9b0]"
-                >
-                  <CheckCircle2 size={16} />
-                  Ready
-                  <Download size={14} />
-                </a>
+             {status === "done" && resultUrl && (
+                
+                 <a
+  href={resultUrl}
+  download={'converted.' + selected.to.toLowerCase()}
+  className="flex items-center justify-center sm:justify-start gap-2 text-sm text-[#6bc9b0] py-2 sm:py-"
+>
+  <CheckCircle2 size={16} />
+  Download
+</a>
               )}
 
               {status === "error" && (
-                <span className="flex items-center gap-2 text-sm text-[#e06a6a]">
-                  <XCircle size={16} />
+                <span className="flex items-center justify-center sm:justify-start gap-2 text-sm text-[#e06a6a] py-2 sm:py-0 text-center">
+                  <XCircle size={16} className="shrink-0" />
                   {errorMsg}
                 </span>
               )}
