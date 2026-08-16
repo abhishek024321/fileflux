@@ -1,0 +1,15 @@
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" role="img">
+<title>File Flux icon</title>
+<desc>Two overlapping document pages with a curved arrow flowing between them, in orange on a dark rounded square background.</desc>
+<rect width="256" height="256" rx="52" fill="#12141c"/>
+<g transform="translate(0,-4)">
+<path d="M78 66 L78 190 Q78 198 86 198 L146 198 Q154 198 154 190 L154 96 L124 66 Z" fill="#1b1e29" stroke="#3a3e50" stroke-width="2.5"/>
+<path d="M124 66 L124 90 Q124 96 130 96 L154 96 Z" fill="#2a2e3d" stroke="#3a3e50" stroke-width="2.5"/>
+<path d="M104 58 L104 182 Q104 190 112 190 L172 190 Q180 190 180 182 L180 88 L150 58 Z" fill="#e8a33d"/>
+<path d="M150 58 L150 82 Q150 88 156 88 L180 88 Z" fill="#c98a2e"/>
+<path d="M118 122 Q142 122 152 138" fill="none" stroke="#12141c" stroke-width="6" stroke-linecap="round"/>
+<path d="M144 129 L154 139 L142 145" fill="none" stroke="#12141c" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M166 156 Q142 156 132 140" fill="none" stroke="#12141c" stroke-width="6" stroke-linecap="round"/>
+<path d="M140 149 L130 139 L142 133" fill="none" stroke="#12141c" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+</svg>
