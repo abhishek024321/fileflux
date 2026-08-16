@@ -6,7 +6,7 @@ import {
   CheckCircle2,
   XCircle,
   ArrowRight,
-  ChevronRight,
+  ChevronDown,
   Download,
 } from "lucide-react";
 
@@ -100,15 +100,7 @@ export default function App() {
   const [errorMsg, setErrorMsg] = useState("");
   const [resultUrl, setResultUrl] = useState(null);
   const inputRef = useRef(null);
-  const pillRowRef = useRef(null);
-  const [atScrollEnd, setAtScrollEnd] = useState(false);
-
-  const handlePillScroll = () => {
-    const el = pillRowRef.current;
-    if (!el) return;
-    const nearEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 8;
-    setAtScrollEnd(nearEnd);
-  };
+  const [pickerOpen, setPickerOpen] = useState(false);
 
   const selected = ALL_PAIRS.find((p) => p.key === selectedKey);
 
@@ -122,6 +114,7 @@ export default function App() {
   const handleSelectPair = (key) => {
     setSelectedKey(key);
     reset();
+    setPickerOpen(false);
   };
 
   const onDrop = useCallback((e) => {
@@ -202,45 +195,66 @@ export default function App() {
         </header>
 
         <div className="grid lg:grid-cols-[280px_1fr] gap-6 lg:gap-8">
-          {/* Conversion picker — one swipeable pill bar with every conversion, on mobile; full list on desktop */}
+          {/* Conversion picker — tap-to-expand vertical dropdown on mobile, full list on desktop */}
           <div className="lg:hidden">
-            <div className="flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-[#5c6070] mb-2 px-0.5">
-              Choose a conversion — swipe for more
-              <ChevronRight size={13} className="text-[#e8a33d] animate-swipe-hint" />
-            </div>
-            <div className="relative -mx-4 sm:-mx-6">
-              <div
-                ref={pillRowRef}
-                onScroll={handlePillScroll}
-                className="no-scrollbar flex gap-2 overflow-x-auto pb-1 px-4 sm:px-6 snap-x snap-mandatory scroll-px-4"
-                style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}
-              >
-                {ALL_PAIRS.map((pair) => {
-                  const active = pair.key === selectedKey;
-                  return (
-                    <button
-                      key={pair.key}
-                      onClick={() => handleSelectPair(pair.key)}
-                      className={`snap-start shrink-0 flex items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-mono whitespace-nowrap border transition-colors ${
-                        active
-                          ? "bg-[#e8a33d] text-[#12141c] font-semibold border-[#e8a33d]"
-                          : "bg-[#1b1e29] text-[#c3c6d1] border-[#2a2e3d] active:bg-[#232735]"
-                      }`}
-                    >
-                      <span>{pair.from}</span>
-                      <ArrowRight size={11} className={active ? "opacity-80" : "opacity-40"} />
-                      <span>{pair.to}</span>
-                    </button>
-                  );
-                })}
-              </div>
-              {/* fade + animated chevron signalling there's more to swipe — fades out once scrolled to the end */}
-              <div
-                className={`pointer-events-none absolute top-0 right-0 h-full w-10 bg-gradient-to-l from-[#12141c] to-transparent flex items-center justify-end transition-opacity duration-300 ${
-                  atScrollEnd ? "opacity-0" : "opacity-100"
+            <label className="block font-mono text-[11px] uppercase tracking-[0.18em] text-[#5c6070] mb-2 px-0.5">
+              Choose a conversion
+            </label>
+
+            <button
+              onClick={() => setPickerOpen((o) => !o)}
+              className={`w-full flex items-center justify-between gap-2 rounded-lg bg-[#1b1e29] border px-3.5 py-3 text-sm font-mono transition-colors ${
+                pickerOpen ? "border-[#e8a33d]" : "border-[#2a2e3d]"
+              }`}
+            >
+              <span className="flex items-center gap-1.5 text-[#ededf0]">
+                <span>{selected.from}</span>
+                <ArrowRight size={12} className="text-[#e8a33d]" />
+                <span>{selected.to}</span>
+              </span>
+              <ChevronDown
+                size={16}
+                className={`text-[#5c6070] transition-transform duration-300 ${
+                  pickerOpen ? "rotate-180 text-[#e8a33d]" : ""
                 }`}
-              >
-                <ChevronRight size={16} className="text-[#e8a33d] mr-0.5 animate-swipe-hint" />
+              />
+            </button>
+
+            <div
+              className={`grid transition-all duration-300 ease-out ${
+                pickerOpen ? "grid-rows-[1fr] opacity-100 mt-2" : "grid-rows-[0fr] opacity-0"
+              }`}
+            >
+              <div className="overflow-hidden">
+                <div className="max-h-72 overflow-y-auto rounded-lg border border-[#2a2e3d] bg-[#1b1e29] p-2 space-y-4">
+                  {GROUPS.map((group) => (
+                    <div key={group.label}>
+                      <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#5c6070] mb-1.5 px-1">
+                        {group.label}
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        {group.pairs.map((pair) => {
+                          const active = pair.key === selectedKey;
+                          return (
+                            <button
+                              key={pair.key}
+                              onClick={() => handleSelectPair(pair.key)}
+                              className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm font-mono text-left transition-colors ${
+                                active
+                                  ? "bg-[#e8a33d] text-[#12141c] font-semibold"
+                                  : "text-[#c3c6d1] active:bg-[#232735]"
+                              }`}
+                            >
+                              <span>{pair.from}</span>
+                              <ArrowRight size={13} className={active ? "opacity-80" : "opacity-40"} />
+                              <span>{pair.to}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
