@@ -6,6 +6,7 @@ import {
   CheckCircle2,
   XCircle,
   ArrowRight,
+  ChevronRight,
   Download,
 } from "lucide-react";
 
@@ -99,6 +100,15 @@ export default function App() {
   const [errorMsg, setErrorMsg] = useState("");
   const [resultUrl, setResultUrl] = useState(null);
   const inputRef = useRef(null);
+  const pillRowRef = useRef(null);
+  const [atScrollEnd, setAtScrollEnd] = useState(false);
+
+  const handlePillScroll = () => {
+    const el = pillRowRef.current;
+    if (!el) return;
+    const nearEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 8;
+    setAtScrollEnd(nearEnd);
+  };
 
   const selected = ALL_PAIRS.find((p) => p.key === selectedKey);
 
@@ -192,26 +202,47 @@ export default function App() {
         </header>
 
         <div className="grid lg:grid-cols-[280px_1fr] gap-6 lg:gap-8">
-          {/* Conversion picker — dropdown on mobile, full list on desktop */}
+          {/* Conversion picker — one swipeable pill bar with every conversion, on mobile; full list on desktop */}
           <div className="lg:hidden">
-            <label className="block font-mono text-[11px] uppercase tracking-[0.18em] text-[#5c6070] mb-2">
-              Choose a conversion
-            </label>
-            <select
-              value={selectedKey}
-              onChange={(e) => handleSelectPair(e.target.value)}
-              className="w-full rounded-lg bg-[#1b1e29] border border-[#2a2e3d] text-[#ededf0] font-mono text-sm px-3 py-3 focus:outline-none focus:border-[#e8a33d] appearance-none"
-            >
-              {GROUPS.map((group) => (
-                <optgroup key={group.label} label={group.label}>
-                  {group.pairs.map((pair) => (
-                    <option key={pair.key} value={pair.key}>
-                      {pair.from} → {pair.to}
-                    </option>
-                  ))}
-                </optgroup>
-              ))}
-            </select>
+            <div className="flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-[#5c6070] mb-2 px-0.5">
+              Choose a conversion — swipe for more
+              <ChevronRight size={13} className="text-[#e8a33d] animate-swipe-hint" />
+            </div>
+            <div className="relative -mx-4 sm:-mx-6">
+              <div
+                ref={pillRowRef}
+                onScroll={handlePillScroll}
+                className="no-scrollbar flex gap-2 overflow-x-auto pb-1 px-4 sm:px-6 snap-x snap-mandatory scroll-px-4"
+                style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}
+              >
+                {ALL_PAIRS.map((pair) => {
+                  const active = pair.key === selectedKey;
+                  return (
+                    <button
+                      key={pair.key}
+                      onClick={() => handleSelectPair(pair.key)}
+                      className={`snap-start shrink-0 flex items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-mono whitespace-nowrap border transition-colors ${
+                        active
+                          ? "bg-[#e8a33d] text-[#12141c] font-semibold border-[#e8a33d]"
+                          : "bg-[#1b1e29] text-[#c3c6d1] border-[#2a2e3d] active:bg-[#232735]"
+                      }`}
+                    >
+                      <span>{pair.from}</span>
+                      <ArrowRight size={11} className={active ? "opacity-80" : "opacity-40"} />
+                      <span>{pair.to}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              {/* fade + animated chevron signalling there's more to swipe — fades out once scrolled to the end */}
+              <div
+                className={`pointer-events-none absolute top-0 right-0 h-full w-10 bg-gradient-to-l from-[#12141c] to-transparent flex items-center justify-end transition-opacity duration-300 ${
+                  atScrollEnd ? "opacity-0" : "opacity-100"
+                }`}
+              >
+                <ChevronRight size={16} className="text-[#e8a33d] mr-0.5 animate-swipe-hint" />
+              </div>
+            </div>
           </div>
 
           <nav className="hidden lg:block space-y-6">
