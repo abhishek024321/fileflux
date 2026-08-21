@@ -1,7 +1,7 @@
 const fs = require("fs/promises");
 const path = require("path");
 const { PDFDocument } = require("pdf-lib");
-const pdfPoppler = require("pdf-poppler");
+const pdf2img = require("pdf-img-convert");
 const sharp = require("sharp");
 
 /**
